@@ -1,0 +1,463 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1020">
+  <title>LogicLab | Smart Logic Gate Simulator</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #141c30;
+      --panel2: #1b2740;
+      --border: #2c3955;
+      --text: #f1f5ff;
+      --muted: #a4b1ca;
+      --cyan: #55e6d0;
+      --purple: #a78bfa;
+      --green: #63e6a5;
+      --red: #ff7585;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at top, #172442, var(--bg) 60%);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 22px clamp(18px, 5vw, 64px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      background: #0b1020d9;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: #08151c;
+      font-size: 23px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+    }
+
+    h1 { font-size: clamp(20px, 3vw, 28px); margin: 0; }
+    .subtitle { color: var(--muted); font-size: 13px; margin-top: 5px; }
+    .status { color: var(--green); font-size: 13px; }
+
+    main {
+      width: min(1180px, 92%);
+      margin: 32px auto 60px;
+    }
+
+    .hero {
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: linear-gradient(120deg, #172b43, #211b3c);
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .hero h2 { font-size: clamp(25px, 4vw, 39px); margin: 12px 0; }
+    .hero p { color: var(--muted); line-height: 1.7; max-width: 720px; margin-bottom: 0; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    .stat, .panel {
+      background: #141c30eF;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      min-width: 0;
+    }
+
+    .stat-label { color: var(--muted); font-size: 13px; }
+    .stat-value { font-size: 27px; font-weight: 800; margin-top: 9px; }
+    .accent { color: var(--cyan); }
+
+    .section-title {
+      font-size: 19px;
+      margin: 0 0 8px;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 0 0 18px;
+    }
+
+    .gate-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .gate-card {
+      text-align: left;
+      color: var(--text);
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .gate-card:hover, .gate-card.selected {
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 1px #55e6d033;
+    }
+
+    .gate-symbol { font-size: 24px; font-weight: 800; color: var(--cyan); }
+    .gate-name { font-weight: 800; margin-top: 8px; }
+    .gate-desc { font-size: 12px; color: var(--muted); margin-top: 5px; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+    .btn {
+      padding: 11px 15px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      background: var(--panel2);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      color: #071b20;
+    }
+
+    .btn:hover { filter: brightness(1.1); }
+
+    .switches { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0; }
+
+    .switch-card {
+      flex: 1;
+      min-width: 105px;
+      border: 1px solid var(--border);
+      background: #10182a;
+      padding: 15px;
+      border-radius: 13px;
+    }
+
+    .switch-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .switch-card label { font-weight: 800; }
+
+    .toggle {
+      appearance: none;
+      width: 46px;
+      height: 25px;
+      border-radius: 30px;
+      background: #46536c;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .toggle::after {
+      content: "";
+      width: 19px;
+      height: 19px;
+      background: white;
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      border-radius: 50%;
+      transition: .18s;
+    }
+
+    .toggle:checked { background: #22b994; }
+    .toggle:checked::after { left: 24px; }
+
+    .binary { color: var(--muted); font-size: 13px; margin-top: 10px; }
+
+    .result-box {
+      margin-top: 15px;
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid #347e78;
+      background: #102b30;
+    }
+
+    .result-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .result-value { font-size: 36px; font-weight: 900; color: var(--green); margin: 6px 0; }
+    .result-value.off { color: var(--red); }
+    .explanation { color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+    .truth-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+    .truth-table th, .truth-table td {
+      padding: 11px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .truth-table th { color: var(--cyan); background: #1b2740; font-size: 12px; }
+    .truth-table tr.current { background: #244b4a; font-weight: 800; }
+
+    .table-wrap { overflow-x: auto; }
+    .notice { color: var(--muted); font-size: 12px; line-height: 1.6; margin-top: 12px; }
+    .coming { border-style: dashed; margin-top: 18px; }
+    .coming strong { color: var(--purple); }
+
+    footer { text-align: center; color: var(--muted); font-size: 12px; padding: 25px; }
+
+    @media (max-width: 760px) {
+      .workspace { grid-template-columns: 1fr; }
+      .gate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats { gap: 8px; }
+      .stat { padding: 12px; }
+      .stat-value { font-size: 22px; }
+      .hero { padding: 21px; }
+    }
+
+    @media (max-width: 390px) {
+      .gate-grid { grid-template-columns: 1fr 1fr; }
+      .truth-table th, .truth-table td { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">L</div>
+      <div>
+        <h1>LogicLab</h1>
+        <div class="subtitle">SMART DIGITAL ELECTRONICS LAB</div>
+      </div>
+    </div>
+    <div class="status">● Interactive Lab</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Digital Electronics Project</div>
+      <h2>Understand logic.<br><span class="accent">Detect the unexpected.</span></h2>
+      <p>Explore digital logic gates, change binary inputs in real time, generate truth tables, and experiment with simulated gate faults — all in your browser.</p>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-label">Available Gates</div>
+        <div class="stat-value">06</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Input Combinations</div>
+        <div class="stat-value">04</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Operating Mode</div>
+        <div class="stat-value accent">LIVE</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3 class="section-title">01 / Choose a Logic Gate</h3>
+      <p class="section-desc">Select a gate to explore its output and truth table.</p>
+      <div class="gate-grid">
+        <button class="gate-card selected" data-gate="AND">
+          <div class="gate-symbol">∧</div><div class="gate-name">AND</div><div class="gate-desc">True when both inputs are 1</div>
+        </button>
+        <button class="gate-card" data-gate="OR">
+          <div class="gate-symbol">∨</div><div class="gate-name">OR</div><div class="gate-desc">True when either input is 1</div>
+        </button>
+        <button class="gate-card" data-gate="NOT">
+          <div class="gate-symbol">¬</div><div class="gate-name">NOT</div><div class="gate-desc">Reverses one input</div>
+        </button>
+        <button class="gate-card" data-gate="NAND">
+          <div class="gate-symbol">⊼</div><div class="gate-name">NAND</div><div class="gate-desc">Opposite of AND</div>
+        </button>
+        <button class="gate-card" data-gate="NOR">
+          <div class="gate-symbol">⊽</div><div class="gate-name">NOR</div><div class="gate-desc">Opposite of OR</div>
+        </button>
+        <button class="gate-card" data-gate="XOR">
+          <div class="gate-symbol">⊕</div><div class="gate-name">XOR</div><div class="gate-desc">True when inputs differ</div>
+        </button>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel">
+        <h3 class="section-title">02 / Live Circuit Lab</h3>
+        <p class="section-desc">Flip the switches and observe the output instantly.</p>
+        <div id="inputSwitches" class="switches">
+          <div class="switch-card">
+            <div class="switch-top"><label for="inputA">Input A</label><input class="toggle" id="inputA" type="checkbox"></div>
+            <div class="binary">Binary value: <strong id="valueA">0</strong></div>
+          </div>
+          <div class="switch-card" id="switchBCard">
+            <div class="switch-top"><label for="inputB">Input B</label><input class="toggle" id="inputB" type="checkbox"></div>
+            <div class="binary">Binary value: <strong id="valueB">0</strong></div>
+          </div>
+        </div>
+        <div class="result-box">
+          <div class="result-label">Gate Output</div>
+          <div class="result-value" id="outputValue">0</div>
+          <div id="outputText" class="explanation">Output is LOW (0).</div>
+        </div>
+        <div class="controls">
+          <button class="btn" id="resetBtn">Reset Inputs</button>
+          <button class="btn btn-primary" id="testBtn">Test All Inputs</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3 class="section-title">03 / Automatic Truth Table</h3>
+        <p class="section-desc">The highlighted row matches your current switch settings.</p>
+        <div class="table-wrap">
+          <table class="truth-table">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <p class="notice" id="tableNote">Standard truth table for the selected gate.</p>
+      </section>
+    </div>
+
+    <section class="panel coming">
+      <h3 class="section-title">04 / Fault Detection Lab</h3>
+      <p class="section-desc">Next, we'll add simulated stuck-at faults, expected-versus-actual output comparison, and diagnostic feedback.</p>
+      <strong>Next module: Fault injection & diagnosis</strong>
+    </section>
+  </main>
+
+  <footer>LogicLab · Smart Logic Gate Simulator · Digital Electronics</footer>
+
+  <script>
+    const gateCards = document.querySelectorAll(".gate-card");
+    const inputA = document.getElementById("inputA");
+    const inputB = document.getElementById("inputB");
+    const valueA = document.getElementById("valueA");
+    const valueB = document.getElementById("valueB");
+    const outputValue = document.getElementById("outputValue");
+    const outputText = document.getElementById("outputText");
+    const tableHead = document.getElementById("tableHead");
+    const tableBody = document.getElementById("tableBody");
+    const switchBCard = document.getElementById("switchBCard");
+
+    let selectedGate = "AND";
+    let testMode = false;
+
+    function calculate(gate, a, b) {
+      switch (gate) {
+        case "AND": return a & b;
+        case "OR": return a | b;
+        case "NOT": return a ? 0 : 1;
+        case "NAND": return (a & b) ? 0 : 1;
+        case "NOR": return (a | b) ? 0 : 1;
+        case "XOR": return a ^ b;
+        default: return 0;
+      }
+    }
+
+    function update() {
+      const a = Number(inputA.checked);
+      const b = Number(inputB.checked);
+      const result = calculate(selectedGate, a, b);
+
+      valueA.textContent = a;
+      valueB.textContent = b;
+      switchBCard.style.display = selectedGate === "NOT" ? "none" : "";
+      outputValue.textContent = result;
+      outputValue.classList.toggle("off", result === 0);
+      outputText.textContent = result
+        ? "Output is HIGH (1). The gate produces a logic 1."
+        : "Output is LOW (0). The gate produces a logic 0.";
+
+      gateCards.forEach(card => {
+        card.classList.toggle("selected", card.dataset.gate === selectedGate);
+      });
+
+      renderTable(a, b);
+    }
+
+    function renderTable(a, b) {
+      const isNot = selectedGate === "NOT";
+      tableHead.innerHTML = isNot
+        ? "<tr><th>Input A</th><th>Output Y</th></tr>"
+        : "<tr><th>Input A</th><th>Input B</th><th>Output Y</th></tr>";
+
+      const combinations = isNot
+        ? [[0, 0], [1, 0]]
+        : [[0, 0], [0, 1], [1, 0], [1, 1]];
+
+      tableBody.innerHTML = combinations.map(([x, y]) => {
+        const result = calculate(selectedGate, x, y);
+        const active = x === a && (isNot || y === b);
+        return `<tr class="${active ? "current" : ""}">
+          <td>${x}</td>${isNot ? "" : `<td>${y}</td>`}<td>${result}</td></tr>`;
+      }).join("");
+
+      document.getElementById("tableNote").textContent =
+        isNot ? "NOT uses only Input A." : "Standard truth table for the selected gate.";
+    }
+
+    gateCards.forEach(card => {
+      card.addEventListener("click", () => {
+        selectedGate = card.dataset.gate;
+        update();
+      });
+    });
+
+    inputA.addEventListener("change", update);
+    inputB.addEventListener("change", update);
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      inputA.checked = false;
+      inputB.checked = false;
+      testMode = false;
+      update();
+    });
+
+    document.getElementById("testBtn").addEventListener("click", () => {
+      const combinations = selectedGate === "NOT"
+        ? [[0, 0], [1, 0]]
+        : [[0, 0], [0, 1], [1, 0], [1, 1]];
+      const results = combinations.map(([a, b]) =>
+        `${a}${selectedGate === "NOT" ? "" : " " + b} → ${calculate(selectedGate, a, b)}`
+      ).join("\n");
+      alert(`${selectedGate} gate — all input tests:\n\n${results}`);
+    });
+
+    update();
+  </script>
+</body>
+</html>
