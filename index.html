@@ -1,346 +1,49 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0b1020">
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LogicLab | Smart Logic Gate Simulator</title>
 <style>
-:root{--bg:#0b1020;--panel:#141d32;--panel2:#1b2842;--line:#30405e;--text:#f3f6ff;--muted:#aab7d0;--cyan:#55e6d0;--purple:#b59aff;--green:#64e6a4;--red:#ff7585;--amber:#ffd078}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at top,#1a2a4b 0,var(--bg) 58%);color:var(--text);font-family:Inter,"Segoe UI",Arial,sans-serif;min-height:100vh}
-header{padding:20px clamp(16px,4vw,54px);display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:#0b1020e8}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{height:46px;width:46px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#10152a;font-weight:950;font-size:24px}
-h1{font-size:25px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:4px;letter-spacing:1px}
-.pill{border:1px solid #285c58;color:var(--green);background:#102a2c;border-radius:30px;padding:9px 13px;font-size:12px;font-weight:700}
-main{width:min(1200px,93%);margin:28px auto 55px}
-.hero{padding:clamp(22px,4vw,36px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(115deg,#172d49,#272044);margin-bottom:18px}
-.eyebrow{color:var(--cyan);font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
-h2{font-size:clamp(27px,4vw,42px);line-height:1.15;margin:12px 0}
-.accent{color:var(--cyan)}
-p{line-height:1.65}.hero p{color:var(--muted);max-width:760px;margin-bottom:0}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
-.stat,.panel{min-width:0;border:1px solid var(--line);background:#141d32ed;border-radius:18px;padding:19px}
-.stat small{color:var(--muted)}.stat strong{display:block;font-size:26px;margin-top:8px}
-.layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
-.section-title{font-size:18px;margin:0 0 7px}
-.desc{font-size:13px;color:var(--muted);margin:0 0 17px}
-.gates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.gate{cursor:pointer;text-align:left;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:13px;padding:13px;min-width:0}
-.gate.selected{border-color:var(--cyan);box-shadow:0 0 0 1px #55e6d033}
-.symbol{color:var(--cyan);font-size:25px;font-weight:900}.gate b{display:block;margin:6px 0 4px}.gate small{color:var(--muted);font-size:11px;line-height:1.4}
-.switches{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
-.switch{flex:1;min-width:110px;background:#0e1729;border:1px solid var(--line);border-radius:13px;padding:14px}
-.switchhead{display:flex;justify-content:space-between;align-items:center;gap:6px}
-.toggle{appearance:none;width:43px;height:24px;border-radius:20px;background:#4b5973;position:relative;cursor:pointer;flex-shrink:0}
-.toggle:before{content:"";position:absolute;width:18px;height:18px;top:3px;left:3px;background:white;border-radius:50%;transition:.18s}
-.toggle:checked{background:#19a88a}.toggle:checked:before{left:22px}
-.binary{color:var(--muted);font-size:12px;margin-top:10px}
-select{width:100%;padding:12px;background:#0e1729;color:var(--text);border:1px solid var(--line);border-radius:10px;margin:8px 0 14px;font-size:14px}
-.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.result{border:1px solid var(--line);background:#0e1729;padding:16px;border-radius:14px}
-.result small{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.7px}
-.value{font-size:34px;font-weight:900;margin:7px 0}
-.good{color:var(--green)}.bad{color:var(--red)}.neutral{color:var(--cyan)}
-.circuit{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;background:#0e1729;border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px}
-.node{border:1px solid var(--line);border-radius:10px;padding:11px 13px;text-align:center;background:var(--panel2);font-weight:800}
-.wire{width:22px;height:2px;background:var(--cyan)}
-.gate-node{color:var(--cyan);border-color:#377d78;min-width:74px}
-.controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
-button.btn{border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text);padding:11px 14px;cursor:pointer;font-weight:750}
-button.primary{background:var(--cyan);color:#071b20;border-color:var(--cyan)}
-button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--purple);outline-offset:3px}
-.message{margin-top:14px;padding:13px;border-radius:12px;background:#102b30;border:1px solid #2d6864;font-size:13px;line-height:1.6}
-.message.warning{background:#33291a;border-color:#78613a}.message.error{background:#321c2a;border-color:#7c394a}
-.tablewrap{overflow-x:auto;margin-top:12px}
-table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:13px}
-th,td{text-align:center;padding:11px 9px;border-bottom:1px solid var(--line)}
-th{background:#1c2944;color:var(--cyan);font-size:11px;text-transform:uppercase}
-tr.current{background:#234746}tr.detected{box-shadow:inset 3px 0 var(--red)}
-.tag{display:inline-block;border-radius:20px;padding:4px 8px;font-size:11px;font-weight:800}
-.tag.yes{background:#49232f;color:#ffabb7}.tag.no{background:#173d34;color:#83f0bd}
-.info{font-size:12px;color:var(--muted);line-height:1.7}
-footer{text-align:center;color:var(--muted);padding:22px;font-size:12px}
-@media(max-width:760px){.layout{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:22px}.gates{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:380px){.result-grid{grid-template-columns:1fr}.gate{padding:10px}}
-</style>
-</head>
-<body>
-<header>
-  <div class="brand"><div class="logo">L</div><div><h1>LogicLab</h1><div class="sub">SMART DIGITAL ELECTRONICS LAB</div></div></div>
-  <div class="pill">● INTERACTIVE SIMULATOR</div>
-</header>
+:root{--bg:#0b1020;--p:#141d32;--p2:#1b2842;--line:#30405e;--txt:#f3f6ff;--muted:#aab7d0;--cyan:#55e6d0;--green:#64e6a4;--red:#ff7585;--amber:#ffd078}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1a2a4b,var(--bg) 65%);color:var(--txt);font:15px "Segoe UI",Arial,sans-serif}header,main{width:min(1150px,94%);margin:auto}header{padding:22px 0;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}h1{margin:0}h2,h3{margin-top:0}.muted,.desc,small{color:var(--muted)}main{padding-bottom:40px}.hero,.panel,.stat{background:var(--p);border:1px solid var(--line);border-radius:17px;padding:20px;margin-bottom:15px}.hero{background:linear-gradient(115deg,#172d49,#272044)}.hero h2{font-size:clamp(27px,4vw,40px);margin:10px 0}.accent{color:var(--cyan)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat strong{display:block;font-size:25px;margin-top:7px}.gates{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.gate,button,select{cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--p2);color:var(--txt)}.gate{text-align:left}.gate.selected{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan)}.sym{font-size:23px;color:var(--cyan);display:block}.gate b{display:block;margin:5px 0}.layout{display:grid;grid-template-columns:1.2fr .8fr;gap:15px}.switches,.outputs,.buttons{display:flex;gap:10px;flex-wrap:wrap}.switch{flex:1;min-width:125px;background:#0e1729;border:1px solid var(--line);padding:13px;border-radius:12px}.switch label{display:flex;justify-content:space-between;align-items:center;font-weight:bold}.switch input{width:20px;height:20px;accent-color:#19a88a}.circuit{margin:15px 0;background:#091426;border:1px solid var(--line);border-radius:13px;padding:10px}.circuit svg{display:block;width:100%;height:auto;min-height:170px}.wire{stroke:var(--cyan);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}.shape{fill:#17314a;stroke:var(--cyan);stroke-width:3;stroke-linejoin:round}.bubble{fill:#091426;stroke:var(--cyan);stroke-width:3}.wlabel{fill:var(--txt);font-size:15px;font-weight:bold}.glabel{fill:var(--txt);font-size:15px;font-weight:bold;text-anchor:middle}.pill{fill:#102b30;stroke:#2d6864;stroke-width:1.5}.pilltxt{fill:var(--green);font-size:15px;font-weight:bold;text-anchor:middle}.outputs{margin-top:12px}.out{flex:1;min-width:110px;background:#0e1729;border:1px solid var(--line);border-radius:12px;padding:14px}.val{font-size:32px;font-weight:bold;margin:5px 0}.green{color:var(--green)}.red{color:var(--red)}.cyan{color:var(--cyan)}.message{padding:12px;border-radius:10px;background:#102b30;border:1px solid #2d6864;line-height:1.6;margin-top:12px}.warn{background:#33291a;border-color:#78613a}.error{background:#321c2a;border-color:#7c394a}select{width:100%;margin:9px 0 12px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:center;padding:10px;border-bottom:1px solid var(--line)}th{color:var(--cyan);background:#1c2944}tr.current{background:#234746}tr.detected{box-shadow:inset 3px 0 var(--red)}.tablewrap{overflow-x:auto}.buttons{margin-top:12px}button.primary{background:var(--cyan);color:#071b20;font-weight:bold}.foot{text-align:center;color:var(--muted);padding:20px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.gates{grid-template-columns:repeat(2,1fr)}.stats{gap:6px}.stat{padding:12px}}
+</style></head><body>
+<header><div><h1>LogicLab</h1><div class="muted">SMART DIGITAL ELECTRONICS LAB</div></div><strong class="cyan">LIVE CIRCUIT SIMULATOR</strong></header>
 <main>
-  <section class="hero">
-    <div class="eyebrow">Digital Electronics Project</div>
-    <h2>Understand logic.<br><span class="accent">Detect the unexpected.</span></h2>
-    <p>Explore six logic gates, generate truth tables, inject simulated output faults and discover which input combinations reveal incorrect behaviour.</p>
-  </section>
-  <section class="stats">
-    <div class="stat"><small>Logic gates</small><strong>06</strong></div>
-    <div class="stat"><small>Fault models</small><strong>02</strong></div>
-    <div class="stat"><small>Test combinations</small><strong id="testCount">04</strong></div>
-  </section>
-
-  <section class="panel">
-    <h3 class="section-title">01 / Select a logic gate</h3>
-    <p class="desc">Choose a gate to change its behaviour, output and truth table.</p>
-    <div class="gates">
-      <button class="gate selected" data-gate="AND"><span class="symbol">∧</span><b>AND</b><small>Both inputs must be 1</small></button>
-      <button class="gate" data-gate="OR"><span class="symbol">∨</span><b>OR</b><small>At least one input is 1</small></button>
-      <button class="gate" data-gate="NOT"><span class="symbol">¬</span><b>NOT</b><small>Reverses input A</small></button>
-      <button class="gate" data-gate="NAND"><span class="symbol">⊼</span><b>NAND</b><small>Opposite of AND</small></button>
-      <button class="gate" data-gate="NOR"><span class="symbol">⊽</span><b>NOR</b><small>Opposite of OR</small></button>
-      <button class="gate" data-gate="XOR"><span class="symbol">⊕</span><b>XOR</b><small>Inputs must differ</small></button>
-    </div>
-  </section>
-
-  <div class="layout">
-    <section class="panel">
-      <h3 class="section-title">02 / Live circuit lab</h3>
-      <p class="desc">Switch the inputs and watch the correct and simulated faulty outputs.</p>
-      <div class="switches">
-        <div class="switch"><div class="switchhead"><b>Input A</b><input id="inputA" class="toggle" type="checkbox" aria-label="Input A"></div><div class="binary">Binary value: <strong id="valueA">0</strong></div></div>
-        <div class="switch" id="switchBCard"><div class="switchhead"><b>Input B</b><input id="inputB" class="toggle" type="checkbox" aria-label="Input B"></div><div class="binary">Binary value: <strong id="valueB">0</strong></div></div>
-      </div>
-      <div class="circuit">
-        <div class="node" id="nodeA">A = 0</div><div class="wire"></div>
-        <div class="node gate-node" id="gateNode">AND</div><div class="wire"></div>
-        <div class="node" id="nodeY">Y = 0</div>
-      </div>
-      <div class="result-grid" style="margin-top:14px">
-        <div class="result"><small>Expected output</small><div id="expected" class="value good">0</div><div class="info">Correct logic result</div></div>
-        <div class="result"><small>Actual output</small><div id="actual" class="value good">0</div><div class="info">After fault injection</div></div>
-      </div>
-      <div id="liveMessage" class="message">No fault injected. The gate behaves normally.</div>
-      <div class="controls"><button class="btn" id="resetInputs">Reset inputs</button><button class="btn primary" id="testAll">Run all test inputs</button></div>
-    </section>
-
-    <section class="panel">
-      <h3 class="section-title">03 / Fault injection</h3>
-      <p class="desc">Inject a simulated fault into the selected gate's output. This is a software model, not a physical hardware fault.</p>
-      <label for="faultMode"><b>Fault type</b></label>
-      <select id="faultMode">
-        <option value="none">No fault — normal operation</option>
-        <option value="stuck0">Stuck-at-0 — output forced to 0</option>
-        <option value="stuck1">Stuck-at-1 — output forced to 1</option>
-      </select>
-      <div class="result" style="margin-top:4px">
-        <small>Current fault status</small>
-        <div id="faultStatus" class="value neutral" style="font-size:23px">NORMAL</div>
-        <div id="faultDescription" class="info">Output follows the selected logic gate.</div>
-      </div>
-      <h3 class="section-title" style="margin-top:20px">04 / Automatic diagnosis</h3>
-      <div id="diagnosis" class="message">Select a fault to start the diagnostic test.</div>
-      <p class="info">A fault is detected when the expected output differs from the simulated actual output. If they match for an input, that input does not reveal the fault.</p>
-    </section>
-  </div>
-
-  <section class="panel" style="margin-top:16px">
-    <h3 class="section-title">05 / Automatic truth table</h3>
-    <p class="desc">Every input combination is tested. The current switch setting is highlighted, and mismatches are marked.</p>
-    <div class="tablewrap"><table>
-      <thead id="tableHead"></thead><tbody id="tableBody"></tbody>
-    </table></div>
-    <div id="tableSummary" class="message">Truth table ready.</div>
-    <div class="controls"><button class="btn primary" id="runDiagnosis">Run diagnostic scan</button><button class="btn" id="clearFault">Clear fault</button></div>
-  </section>
-
-  <section class="panel" style="margin-top:16px">
-    <h3 class="section-title">06 / How to explain this project</h3>
-    <p class="info"><b>Logic gate simulation:</b> The application calculates the expected output using the selected Boolean logic function.</p>
-    <p class="info"><b>Fault injection:</b> A software switch forces the simulated gate output permanently to logic 0 or logic 1.</p>
-    <p class="info"><b>Fault detection:</b> The program compares the expected output with the simulated actual output for each input combination. A mismatch identifies a test that exposes the injected fault.</p>
-    <p class="info"><b>Important limitation:</b> This version models faults at the gate output. It does not detect real electrical faults or automatically identify arbitrary physical component failures.</p>
-  </section>
-</main>
-<footer>LogicLab · Smart Logic Gate Simulator · Built for Digital Electronics learning</footer>
-
+<section class="hero"><small>DIGITAL ELECTRONICS PROJECT</small><h2>See the circuit.<br><span class="accent">Test the logic.</span></h2><p class="muted">Select a gate, change inputs, and watch the standard circuit symbol and output update live. Explore truth tables and simulated output faults.</p></section>
+<div class="stats"><div class="stat"><small>Logic gates</small><strong>06</strong></div><div class="stat"><small>Fault models</small><strong>02</strong></div><div class="stat"><small>Test combinations</small><strong id="count">04</strong></div></div>
+<section class="panel"><h3>01 / Select a logic gate</h3><p class="desc">Choose a gate to display its standard symbol.</p><div class="gates">
+<button class="gate selected" data-g="AND"><span class="sym">∧</span><b>AND</b><small>Both inputs must be 1</small></button>
+<button class="gate" data-g="OR"><span class="sym">∨</span><b>OR</b><small>At least one input is 1</small></button>
+<button class="gate" data-g="NOT"><span class="sym">¬</span><b>NOT</b><small>Reverses input A</small></button>
+<button class="gate" data-g="NAND"><span class="sym">⊼</span><b>NAND</b><small>Opposite of AND</small></button>
+<button class="gate" data-g="NOR"><span class="sym">⊽</span><b>NOR</b><small>Opposite of OR</small></button>
+<button class="gate" data-g="XOR"><span class="sym">⊕</span><b>XOR</b><small>Inputs must differ</small></button></div></section>
+<div class="layout"><section class="panel"><h3>02 / Live logic circuit</h3><p class="desc">Change an input switch. The circuit labels and output update automatically.</p>
+<div class="switches"><div class="switch"><label>Input A <input id="a" type="checkbox"></label><p class="muted">Binary value: <b id="av">0</b></p></div><div class="switch" id="bcard"><label>Input B <input id="b" type="checkbox"></label><p class="muted">Binary value: <b id="bv">0</b></p></div></div>
+<div class="circuit"><div class="muted" id="ctitle">AND gate circuit</div><svg viewBox="0 0 440 220" role="img" aria-label="Live logic gate diagram">
+<path id="wa" class="wire" d="M25 65 H150"/><path id="wb" class="wire" d="M25 155 H150"/><path id="wo" class="wire" d="M275 110 H365"/>
+<text id="la" class="wlabel" x="25" y="51">A = 0</text><text id="lb" class="wlabel" x="25" y="141">B = 0</text>
+<path id="shape" class="shape" d="M150 35 H205 A75 75 0 0 1 205 185 H150 Z"/><circle id="bubble" class="bubble" cx="284" cy="110" r="9" style="display:none"/>
+<text id="gt" class="glabel" x="205" y="115">AND</text><text id="ly" class="wlabel" x="370" y="98">Y = 0</text><rect id="pill" class="pill" x="360" y="120" width="62" height="31" rx="10"/><text id="py" class="pilltxt" x="391" y="141">0</text></svg><p class="desc">Standard gate symbol, connecting wires, input values and output.</p></div>
+<div class="outputs"><div class="out"><small>EXPECTED OUTPUT</small><div id="exp" class="val green">0</div><small>Correct logic result</small></div><div class="out"><small>ACTUAL OUTPUT</small><div id="act" class="val green">0</div><small>After fault injection</small></div></div><div id="live" class="message">Normal operation.</div>
+<div class="buttons"><button id="reset">Reset inputs</button><button class="primary" id="testall">Run all test inputs</button></div></section>
+<section class="panel"><h3>03 / Fault injection</h3><p class="desc">Simulate an output fault in software; this does not test physical hardware.</p><label for="fault">Fault type</label><select id="fault"><option value="none">No fault — normal operation</option><option value="s0">Stuck-at-0 — output forced to 0</option><option value="s1">Stuck-at-1 — output forced to 1</option></select>
+<div class="out"><small>CURRENT FAULT STATUS</small><div id="status" class="val cyan">NORMAL</div><div id="fd" class="desc">Output follows the selected gate.</div></div>
+<h3 style="margin-top:22px">04 / Automatic diagnosis</h3><div id="diag" class="message">Choose a fault and run a diagnostic scan.</div><p class="desc">A test reveals a fault when expected and actual outputs differ.</p></section></div>
+<section class="panel"><h3>05 / Automatic truth table</h3><p class="desc">Rows that reveal the selected fault are highlighted.</p><div class="tablewrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div><div id="summary" class="message">Truth table ready.</div><div class="buttons"><button class="primary" id="scan">Run diagnostic scan</button><button id="clear">Clear fault</button></div></section>
+<section class="panel"><h3>06 / How it works</h3><p class="desc"><b>Live circuit:</b> Standard gate symbols and wires update with the input values.</p><p class="desc"><b>Logic simulation:</b> JavaScript calculates the expected output using each gate's rule.</p><p class="desc"><b>Fault testing:</b> The program compares expected and simulated actual outputs.</p><p class="desc"><b>Limitation:</b> This is a software model, not a real hardware tester.</p></section>
+</main><div class="foot">LogicLab · Smart Logic Gate Simulator with Fault Detection</div>
 <script>
-(() => {
-  const $ = id => document.getElementById(id);
-  const gates = [...document.querySelectorAll(".gate")];
-  let gate = "AND";
-  let scanMessage = "";
-
-  const aInput = $("inputA");
-  const bInput = $("inputB");
-  const faultInput = $("faultMode");
-
-  function logic(name, a, b) {
-    switch (name) {
-      case "AND": return a && b ? 1 : 0;
-      case "OR": return a || b ? 1 : 0;
-      case "NOT": return a ? 0 : 1;
-      case "NAND": return a && b ? 0 : 1;
-      case "NOR": return a || b ? 0 : 1;
-      case "XOR": return a !== b ? 1 : 0;
-      default: return 0;
-    }
-  }
-
-  function combinations() {
-    return gate === "NOT"
-      ? [[0, 0], [1, 0]]
-      : [[0, 0], [0, 1], [1, 0], [1, 1]];
-  }
-
-  function actualOutput(expected) {
-    if (faultInput.value === "stuck0") return 0;
-    if (faultInput.value === "stuck1") return 1;
-    return expected;
-  }
-
-  function currentValues() {
-    return [Number(aInput.checked), Number(bInput.checked)];
-  }
-
-  function update() {
-    const [a, b] = currentValues();
-    const expected = logic(gate, a, b);
-    const actual = actualOutput(expected);
-    const faulty = faultInput.value !== "none";
-    const mismatch = expected !== actual;
-
-    $("valueA").textContent = a;
-    $("valueB").textContent = b;
-    $("switchBCard").style.display = gate === "NOT" ? "none" : "";
-    $("expected").textContent = expected;
-    $("actual").textContent = actual;
-    $("expected").className = "value good";
-    $("actual").className = "value " + (mismatch ? "bad" : "good");
-    $("nodeA").textContent = "A = " + a;
-    $("gateNode").textContent = gate;
-    $("nodeY").textContent = "Y = " + actual;
-    $("nodeY").style.borderColor = mismatch ? "var(--red)" : "var(--line)";
-
-    gates.forEach(btn => btn.classList.toggle("selected", btn.dataset.gate === gate));
-
-    $("faultStatus").textContent = faultInput.value === "stuck0"
-      ? "STUCK-AT-0" : faultInput.value === "stuck1" ? "STUCK-AT-1" : "NORMAL";
-    $("faultStatus").style.color = faulty ? "var(--amber)" : "var(--cyan)";
-    $("faultDescription").textContent = faultInput.value === "stuck0"
-      ? "The simulated output is forced to logic 0."
-      : faultInput.value === "stuck1"
-        ? "The simulated output is forced to logic 1."
-        : "Output follows the selected logic gate.";
-
-    const live = $("liveMessage");
-    live.className = "message" + (mismatch ? " error" : faulty ? " warning" : "");
-    live.textContent = !faulty
-      ? "Normal operation: expected and actual outputs match."
-      : mismatch
-        ? "FAULT DETECTED for this input! Expected " + expected + ", but actual output is " + actual + "."
-        : "Fault is active but NOT detected by this input because both outputs equal " + expected + ".";
-
-    renderTable(a, b);
-    renderDiagnosis();
-  }
-
-  function renderTable(a, b) {
-    const isNot = gate === "NOT";
-    $("tableHead").innerHTML = isNot
-      ? "<tr><th>Input A</th><th>Expected Y</th><th>Actual Y</th><th>Result</th></tr>"
-      : "<tr><th>Input A</th><th>Input B</th><th>Expected Y</th><th>Actual Y</th><th>Result</th></tr>";
-
-    let detectedCount = 0;
-    const rows = combinations().map(([x, y]) => {
-      const expected = logic(gate, x, y);
-      const actual = actualOutput(expected);
-      const mismatch = expected !== actual;
-      if (mismatch) detectedCount++;
-      const current = x === a && (isNot || y === b);
-      return `<tr class="${current ? "current " : ""}${mismatch ? "detected" : ""}">
-        <td>${x}</td>${isNot ? "" : `<td>${y}</td>`}
-        <td>${expected}</td><td>${actual}</td>
-        <td><span class="tag ${mismatch ? "yes" : "no"}">${mismatch ? "DETECTED" : "MATCH"}</span></td>
-      </tr>`;
-    });
-
-    $("tableBody").innerHTML = rows.join("");
-    $("testCount").textContent = combinations().length;
-    $("tableSummary").className = "message" + (detectedCount ? " error" : "");
-    $("tableSummary").textContent = faultInput.value === "none"
-      ? "No fault is active. All " + combinations().length + " input combinations match the expected output."
-      : detectedCount + " of " + combinations().length + " input combinations expose the selected fault. " +
-        (detectedCount ? "Red-marked rows reveal an output mismatch." : "No mismatch occurs for this gate and fault model.");
-  }
-
-  function renderDiagnosis() {
-    const fault = faultInput.value;
-    const box = $("diagnosis");
-    if (fault === "none") {
-      box.className = "message";
-      box.textContent = "No fault is injected. Choose stuck-at-0 or stuck-at-1, then run a diagnostic scan.";
-      return;
-    }
-
-    const tests = combinations().map(([a, b]) => ({
-      a, b,
-      expected: logic(gate, a, b),
-      actual: actualOutput(logic(gate, a, b))
-    }));
-    const exposing = tests.filter(t => t.expected !== t.actual);
-    const undetected = tests.filter(t => t.expected === t.actual);
-    box.className = "message" + (exposing.length ? " error" : " warning");
-
-    if (exposing.length) {
-      const format = t => gate === "NOT"
-        ? "A=" + t.a
-        : "A=" + t.a + ", B=" + t.b;
-      box.textContent = "DIAGNOSTIC RESULT: " + exposing.length + " test(s) detect this injected fault. Use " +
-        exposing.map(format).join("; ") + ". " +
-        (undetected.length ? undetected.length + " other test(s) do not reveal the fault." : "Every possible input test reveals the fault.");
-    } else {
-      box.textContent = "No available input combination reveals this output fault for the selected gate. The simulated fault is active, but its output matches the correct output for every tested input.";
-    }
-  }
-
-  gates.forEach(btn => btn.addEventListener("click", () => {
-    gate = btn.dataset.gate;
-    scanMessage = "";
-    update();
-  }));
-
-  aInput.addEventListener("change", update);
-  bInput.addEventListener("change", update);
-  faultInput.addEventListener("change", () => {
-    scanMessage = "";
-    update();
-  });
-
-  $("resetInputs").addEventListener("click", () => {
-    aInput.checked = false;
-    bInput.checked = false;
-    update();
-  });
-
-  $("testAll").addEventListener("click", () => {
-    const rows = combinations().map(([a, b]) => {
-      const expected = logic(gate, a, b);
-      const actual = actualOutput(expected);
-      return (gate === "NOT" ? "A=" + a : "A=" + a + ", B=" + b) +
-        " → expected " + expected + ", actual " + actual +
-        (expected !== actual ? " — FAULT DETECTED" : " — MATCH");
-    });
-    alert(gate + " gate — complete input test\n\n" + rows.join("\n"));
-  });
-
-  $("runDiagnosis").addEventListener("click", () => {
-    renderDiagnosis();
-    $("diagnosis").scrollIntoView({behavior:"smooth", block:"nearest"});
-  });
-
-  $("clearFault").addEventListener("click", () => {
-    faultInput.value = "none";
-    scanMessage = "";
-    update();
-  });
-
-  update();
-})();
-</script>
-</body>
-</html>
+(()=>{const $=id=>document.getElementById(id);let gate="AND";const gates=[...document.querySelectorAll(".gate")];const a=$("a"),b=$("b"),fault=$("fault");
+function logic(g,x,y){return ({AND:x&&y?1:0,OR:x||y?1:0,NOT:x?0:1,NAND:x&&y?0:1,NOR:x||y?0:1,XOR:x!==y?1:0})[g]}
+function combos(){return gate==="NOT"?[[0,0],[1,0]]:[[0,0],[0,1],[1,0],[1,1]]}
+function actual(e){return fault.value==="s0"?0:fault.value==="s1"?1:e}
+function draw(x,y,out,bad){const paths={AND:"M150 35 H205 A75 75 0 0 1 205 185 H150 Z",NAND:"M150 35 H195 A65 65 0 0 1 195 165 H150 Z",OR:"M145 35 Q175 110 145 185 Q235 185 275 110 Q235 35 145 35 Z",NOR:"M145 35 Q175 110 145 185 Q225 185 260 110 Q225 35 145 35 Z",XOR:"M158 35 Q188 110 158 185 Q238 185 278 110 Q238 35 158 35 Z",NOT:"M155 45 L155 175 L260 110 Z"};
+$("shape").setAttribute("d",paths[gate]);$("shape").style.stroke=bad?"var(--red)":"var(--cyan)";
+let end={AND:275,NAND:278,OR:275,NOR:279,XOR:287,NOT:278}[gate],inv=["NAND","NOR","NOT"].includes(gate);
+$("bubble").style.display=inv?"":"none";$("bubble").setAttribute("cx",end+9);$("wo").setAttribute("d",`M${end+(inv?18:0)} 110 H365`);
+$("wa").setAttribute("d",gate==="NOT"?"M25 110 H155":"M25 65 H150");$("wb").style.display=gate==="NOT"?"none":"";$("la").setAttribute("y",gate==="NOT"?96:51);$("lb").style.display=gate==="NOT"?"none":"";$("la").textContent="A = "+x;$("lb").textContent="B = "+y;$("gt").textContent=gate;$("gt").setAttribute("x",gate==="NOT"?195:205);$("ly").textContent="Y = "+out;$("py").textContent=out;$("pill").style.stroke=bad?"var(--red)":"#2d6864";$("ctitle").textContent=gate+" gate circuit"}
+function renderTable(x,y){const isNot=gate==="NOT";$("thead").innerHTML=isNot?"<tr><th>A</th><th>Expected Y</th><th>Actual Y</th><th>Test result</th></tr>":"<tr><th>A</th><th>B</th><th>Expected Y</th><th>Actual Y</th><th>Test result</th></tr>";let n=0;$("tbody").innerHTML=combos().map(([u,v])=>{let e=logic(gate,u,v),z=actual(e),bad=e!==z;if(bad)n++;return `<tr class="${u===x&&(isNot||v===y)?"current ":""}${bad?"detected":""}"><td>${u}</td>${isNot?"":`<td>${v}</td>`}<td>${e}</td><td>${z}</td><td>${bad?"FAULT REVEALED":"MATCH"}</td></tr>`}).join("");$("count").textContent=combos().length;$("summary").className="message"+(n?" error":"");$("summary").textContent=fault.value==="none"?"Normal operation: all input combinations match.":`${n} of ${combos().length} input combinations reveal the selected fault.`}
+function diagnosis(run=false){const box=$("diag");if(fault.value==="none"){box.className="message warn";box.textContent=run?"Select Stuck-at-0 or Stuck-at-1 first, then run the scan.":"Choose a fault and run a diagnostic scan.";return}const tests=combos().map(([x,y])=>({x,y,e:logic(gate,x,y)})),hits=tests.filter(t=>t.e!==actual(t.e));box.className="message"+(hits.length?" error":" warn");box.textContent=(run?"Diagnostic scan complete. ":"Diagnostic preview. ")+hits.length+" of "+tests.length+" test combinations reveal the fault. "+(hits.length?"Useful test(s): "+hits.map(t=>gate==="NOT"?"A="+t.x:"A="+t.x+", B="+t.y).join("; ")+".":"No test combination reveals the selected fault for this gate.") }
+function update(){let x=+a.checked,y=+b.checked,e=logic(gate,x,y),z=actual(e),bad=e!==z;$("av").textContent=x;$("bv").textContent=y;$("bcard").style.display=gate==="NOT"?"none":"";$("exp").textContent=e;$("act").textContent=z;$("act").className="val "+(bad?"red":"green");$("status").textContent=fault.value==="s0"?"STUCK-AT-0":fault.value==="s1"?"STUCK-AT-1":"NORMAL";$("status").className="val "+(fault.value==="none"?"cyan":"");$("fd").textContent=fault.value==="s0"?"Output forced to 0.":fault.value==="s1"?"Output forced to 1.":"Output follows the selected gate.";$("live").className="message"+(bad?" error":fault.value!=="none"?" warn":"");$("live").textContent=bad?`FAULT DETECTED: expected ${e}, actual ${z}.`:fault.value==="none"?"Normal operation: expected and actual outputs match.":`Fault is active but this input does not reveal it; both outputs are ${e}.`;gates.forEach(g=>g.classList.toggle("selected",g.dataset.g===gate));draw(x,y,z,bad);renderTable(x,y);diagnosis()}
+gates.forEach(g=>g.addEventListener("click",()=>{gate=g.dataset.g;update()}));a.addEventListener("change",update);b.addEventListener("change",update);fault.addEventListener("change",update);$("reset").addEventListener("click",()=>{a.checked=false;b.checked=false;update()});$("clear").addEventListener("click",()=>{fault.value="none";update()});$("scan").addEventListener("click",()=>diagnosis(true));$("testall").addEventListener("click",()=>{$("summary").textContent="Test run complete. "+$("summary").textContent;});update()})();
+</script></body></html>
