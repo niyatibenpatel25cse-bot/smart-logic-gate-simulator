@@ -1,49 +1,480 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LogicLab | Smart Logic Gate Simulator</title>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Logic Gate Simulator</title>
 <style>
-:root{--bg:#0b1020;--p:#141d32;--p2:#1b2842;--line:#30405e;--txt:#f3f6ff;--muted:#aab7d0;--cyan:#55e6d0;--green:#64e6a4;--red:#ff7585;--amber:#ffd078}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1a2a4b,var(--bg) 65%);color:var(--txt);font:15px "Segoe UI",Arial,sans-serif}header,main{width:min(1150px,94%);margin:auto}header{padding:22px 0;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}h1{margin:0}h2,h3{margin-top:0}.muted,.desc,small{color:var(--muted)}main{padding-bottom:40px}.hero,.panel,.stat{background:var(--p);border:1px solid var(--line);border-radius:17px;padding:20px;margin-bottom:15px}.hero{background:linear-gradient(115deg,#172d49,#272044)}.hero h2{font-size:clamp(27px,4vw,40px);margin:10px 0}.accent{color:var(--cyan)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat strong{display:block;font-size:25px;margin-top:7px}.gates{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.gate,button,select{cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--p2);color:var(--txt)}.gate{text-align:left}.gate.selected{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan)}.sym{font-size:23px;color:var(--cyan);display:block}.gate b{display:block;margin:5px 0}.layout{display:grid;grid-template-columns:1.2fr .8fr;gap:15px}.switches,.outputs,.buttons{display:flex;gap:10px;flex-wrap:wrap}.switch{flex:1;min-width:125px;background:#0e1729;border:1px solid var(--line);padding:13px;border-radius:12px}.switch label{display:flex;justify-content:space-between;align-items:center;font-weight:bold}.switch input{width:20px;height:20px;accent-color:#19a88a}.circuit{margin:15px 0;background:#091426;border:1px solid var(--line);border-radius:13px;padding:10px}.circuit svg{display:block;width:100%;height:auto;min-height:170px}.wire{stroke:var(--cyan);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}.shape{fill:#17314a;stroke:var(--cyan);stroke-width:3;stroke-linejoin:round}.bubble{fill:#091426;stroke:var(--cyan);stroke-width:3}.wlabel{fill:var(--txt);font-size:15px;font-weight:bold}.glabel{fill:var(--txt);font-size:15px;font-weight:bold;text-anchor:middle}.pill{fill:#102b30;stroke:#2d6864;stroke-width:1.5}.pilltxt{fill:var(--green);font-size:15px;font-weight:bold;text-anchor:middle}.outputs{margin-top:12px}.out{flex:1;min-width:110px;background:#0e1729;border:1px solid var(--line);border-radius:12px;padding:14px}.val{font-size:32px;font-weight:bold;margin:5px 0}.green{color:var(--green)}.red{color:var(--red)}.cyan{color:var(--cyan)}.message{padding:12px;border-radius:10px;background:#102b30;border:1px solid #2d6864;line-height:1.6;margin-top:12px}.warn{background:#33291a;border-color:#78613a}.error{background:#321c2a;border-color:#7c394a}select{width:100%;margin:9px 0 12px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:center;padding:10px;border-bottom:1px solid var(--line)}th{color:var(--cyan);background:#1c2944}tr.current{background:#234746}tr.detected{box-shadow:inset 3px 0 var(--red)}.tablewrap{overflow-x:auto}.buttons{margin-top:12px}button.primary{background:var(--cyan);color:#071b20;font-weight:bold}.foot{text-align:center;color:var(--muted);padding:20px}
-@media(max-width:760px){.layout{grid-template-columns:1fr}.gates{grid-template-columns:repeat(2,1fr)}.stats{gap:6px}.stat{padding:12px}}
-</style></head><body>
-<header><div><h1>LogicLab</h1><div class="muted">SMART DIGITAL ELECTRONICS LAB</div></div><strong class="cyan">LIVE CIRCUIT SIMULATOR</strong></header>
+:root {
+  --bg:#0b1120; --panel:#131e31; --panel2:#19263b;
+  --text:#edf4ff; --muted:#a9bad2; --line:#35465f;
+  --cyan:#55d9ff; --green:#55e6a5; --red:#ff7387;
+  --yellow:#ffd166;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;line-height:1.5
+}
+header{
+  padding:28px 18px;text-align:center;
+  background:linear-gradient(130deg,#132d4c,#202449);
+  border-bottom:1px solid var(--line)
+}
+header h1{margin:0 0 8px;font-size:clamp(24px,4vw,36px)}
+header p{margin:0;color:var(--muted)}
+main{max-width:1200px;margin:auto;padding:20px}
+.panel{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:15px;padding:18px;margin-bottom:18px;min-width:0
+}
+h2{font-size:20px;margin:0 0 12px}
+h3{font-size:16px;margin:12px 0 8px}
+p,.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.controls{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+button,select,input{
+  font:inherit;border-radius:8px;border:1px solid var(--line);
+  padding:9px 11px;background:#0e1829;color:var(--text)
+}
+button{cursor:pointer;font-weight:700}
+button:hover{border-color:var(--cyan)}
+button.primary{background:#087caa;border-color:#087caa;color:white}
+button.danger{border-color:#984354;color:#ffb6c0}
+select{max-width:100%}
+label{display:inline-flex;align-items:center;gap:7px;color:var(--muted)}
+.gate-buttons button{min-width:70px}
+.gate-row{
+  display:grid;grid-template-columns:minmax(100px,1fr) minmax(110px,1fr) auto;
+  gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)
+}
+.gate-row:last-child{border-bottom:0}
+.gate-row select{width:100%;min-width:0}
+.badge{
+  display:inline-block;border-radius:7px;padding:3px 9px;
+  background:#21354e;color:var(--cyan);font-weight:bold
+}
+.status{padding:12px;border-radius:9px;background:#0e1829;margin-top:12px}
+.good{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--yellow)}
+.scroll{overflow-x:auto}
+svg{display:block;width:100%;min-width:560px;height:auto;background:#0d1727;border-radius:10px}
+.wire{fill:none;stroke:var(--cyan);stroke-width:2.4;stroke-linejoin:round}
+.wire.faulty{stroke:var(--red);stroke-dasharray:6 5}
+.gate-shape{fill:#172b43;stroke:var(--cyan);stroke-width:2.3}
+.gate-text{fill:var(--text);font-weight:bold;font-size:12px;text-anchor:middle}
+.pin-text{fill:var(--muted);font-size:11px}
+.signal{fill:var(--green)}
+.signal.off{fill:#596b82}
+.output-card{background:#0e1829;padding:12px;border-radius:10px}
+.big-bit{font-size:30px;font-weight:800;color:var(--green)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:9px;text-align:center;border-bottom:1px solid var(--line)}
+th{color:var(--cyan);background:#17263a}
+tr.current{background:#1e3a4c}
+.note{font-size:13px}
+footer{text-align:center;color:var(--muted);padding:20px}
+@media(max-width:760px){
+ main{padding:12px}.grid{grid-template-columns:1fr}
+ .panel{padding:13px}.gate-row{grid-template-columns:1fr 1fr}
+ .gate-row button{grid-column:1/-1}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚡ Smart Logic Gate Simulator</h1>
+  <p>Build digital circuits • Explore truth tables • Simulate logic faults</p>
+</header>
+
 <main>
-<section class="hero"><small>DIGITAL ELECTRONICS PROJECT</small><h2>See the circuit.<br><span class="accent">Test the logic.</span></h2><p class="muted">Select a gate, change inputs, and watch the standard circuit symbol and output update live. Explore truth tables and simulated output faults.</p></section>
-<div class="stats"><div class="stat"><small>Logic gates</small><strong>06</strong></div><div class="stat"><small>Fault models</small><strong>02</strong></div><div class="stat"><small>Test combinations</small><strong id="count">04</strong></div></div>
-<section class="panel"><h3>01 / Select a logic gate</h3><p class="desc">Choose a gate to display its standard symbol.</p><div class="gates">
-<button class="gate selected" data-g="AND"><span class="sym">∧</span><b>AND</b><small>Both inputs must be 1</small></button>
-<button class="gate" data-g="OR"><span class="sym">∨</span><b>OR</b><small>At least one input is 1</small></button>
-<button class="gate" data-g="NOT"><span class="sym">¬</span><b>NOT</b><small>Reverses input A</small></button>
-<button class="gate" data-g="NAND"><span class="sym">⊼</span><b>NAND</b><small>Opposite of AND</small></button>
-<button class="gate" data-g="NOR"><span class="sym">⊽</span><b>NOR</b><small>Opposite of OR</small></button>
-<button class="gate" data-g="XOR"><span class="sym">⊕</span><b>XOR</b><small>Inputs must differ</small></button></div></section>
-<div class="layout"><section class="panel"><h3>02 / Live logic circuit</h3><p class="desc">Change an input switch. The circuit labels and output update automatically.</p>
-<div class="switches"><div class="switch"><label>Input A <input id="a" type="checkbox"></label><p class="muted">Binary value: <b id="av">0</b></p></div><div class="switch" id="bcard"><label>Input B <input id="b" type="checkbox"></label><p class="muted">Binary value: <b id="bv">0</b></p></div></div>
-<div class="circuit"><div class="muted" id="ctitle">AND gate circuit</div><svg viewBox="0 0 440 220" role="img" aria-label="Live logic gate diagram">
-<path id="wa" class="wire" d="M25 65 H150"/><path id="wb" class="wire" d="M25 155 H150"/><path id="wo" class="wire" d="M275 110 H365"/>
-<text id="la" class="wlabel" x="25" y="51">A = 0</text><text id="lb" class="wlabel" x="25" y="141">B = 0</text>
-<path id="shape" class="shape" d="M150 35 H205 A75 75 0 0 1 205 185 H150 Z"/><circle id="bubble" class="bubble" cx="284" cy="110" r="9" style="display:none"/>
-<text id="gt" class="glabel" x="205" y="115">AND</text><text id="ly" class="wlabel" x="370" y="98">Y = 0</text><rect id="pill" class="pill" x="360" y="120" width="62" height="31" rx="10"/><text id="py" class="pilltxt" x="391" y="141">0</text></svg><p class="desc">Standard gate symbol, connecting wires, input values and output.</p></div>
-<div class="outputs"><div class="out"><small>EXPECTED OUTPUT</small><div id="exp" class="val green">0</div><small>Correct logic result</small></div><div class="out"><small>ACTUAL OUTPUT</small><div id="act" class="val green">0</div><small>After fault injection</small></div></div><div id="live" class="message">Normal operation.</div>
-<div class="buttons"><button id="reset">Reset inputs</button><button class="primary" id="testall">Run all test inputs</button></div></section>
-<section class="panel"><h3>03 / Fault injection</h3><p class="desc">Simulate an output fault in software; this does not test physical hardware.</p><label for="fault">Fault type</label><select id="fault"><option value="none">No fault — normal operation</option><option value="s0">Stuck-at-0 — output forced to 0</option><option value="s1">Stuck-at-1 — output forced to 1</option></select>
-<div class="out"><small>CURRENT FAULT STATUS</small><div id="status" class="val cyan">NORMAL</div><div id="fd" class="desc">Output follows the selected gate.</div></div>
-<h3 style="margin-top:22px">04 / Automatic diagnosis</h3><div id="diag" class="message">Choose a fault and run a diagnostic scan.</div><p class="desc">A test reveals a fault when expected and actual outputs differ.</p></section></div>
-<section class="panel"><h3>05 / Automatic truth table</h3><p class="desc">Rows that reveal the selected fault are highlighted.</p><div class="tablewrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div><div id="summary" class="message">Truth table ready.</div><div class="buttons"><button class="primary" id="scan">Run diagnostic scan</button><button id="clear">Clear fault</button></div></section>
-<section class="panel"><h3>06 / How it works</h3><p class="desc"><b>Live circuit:</b> Standard gate symbols and wires update with the input values.</p><p class="desc"><b>Logic simulation:</b> JavaScript calculates the expected output using each gate's rule.</p><p class="desc"><b>Fault testing:</b> The program compares expected and simulated actual outputs.</p><p class="desc"><b>Limitation:</b> This is a software model, not a real hardware tester.</p></section>
-</main><div class="foot">LogicLab · Smart Logic Gate Simulator with Fault Detection</div>
+  <section class="panel">
+    <h2>01 · Individual Gate Lab</h2>
+    <p>Choose a gate and change its binary inputs to see the output.</p>
+    <div class="controls gate-buttons" id="singleButtons">
+      <button data-gate="AND">AND</button>
+      <button data-gate="OR">OR</button>
+      <button data-gate="NOT">NOT</button>
+      <button data-gate="NAND">NAND</button>
+      <button data-gate="NOR">NOR</button>
+      <button data-gate="XOR">XOR</button>
+    </div>
+    <div class="controls" style="margin-top:15px">
+      <strong id="singleTitle">AND Gate</strong>
+      <label>Input A
+        <select id="singleA"><option value="0">0</option><option value="1">1</option></select>
+      </label>
+      <label id="singleBLabel">Input B
+        <select id="singleB"><option value="0">0</option><option value="1">1</option></select>
+      </label>
+      <span class="badge">Output Y</span>
+      <span id="singleOutput" class="big-bit">0</span>
+    </div>
+    <div class="scroll" style="margin-top:12px">
+      <svg id="singleSvg" viewBox="0 0 520 155" role="img" aria-label="Selected logic gate diagram"></svg>
+    </div>
+    <h3>Truth Table</h3>
+    <div id="singleTable" class="scroll"></div>
+  </section>
+
+  <section class="panel">
+    <h2>02 · Combinational Circuit Builder</h2>
+    <p>Add multiple gates and choose which input signals feed each gate.
+       A gate can use primary inputs A/B or outputs from earlier gates.</p>
+    <div class="controls">
+      <button class="primary" id="addGate">＋ Add Gate</button>
+      <button id="example">Load Example Circuit</button>
+      <button class="danger" id="clearCircuit">Clear Circuit</button>
+    </div>
+    <div id="gateList" style="margin-top:12px"></div>
+    <div class="controls" style="margin-top:14px">
+      <label>Primary input A
+        <select id="inputA"><option value="0">0</option><option value="1">1</option></select>
+      </label>
+      <label>Primary input B
+        <select id="inputB"><option value="0">0</option><option value="1">1</option></select>
+      </label>
+      <label>Output to observe
+        <select id="finalOutput"></select>
+      </label>
+    </div>
+    <div class="scroll" style="margin-top:14px">
+      <svg id="circuitSvg" viewBox="0 0 760 260" role="img" aria-label="Built combinational circuit"></svg>
+    </div>
+    <div class="grid" style="margin-top:14px">
+      <div class="output-card">
+        <div class="muted">Normal output</div>
+        <div class="big-bit" id="normalOutput">0</div>
+      </div>
+      <div class="output-card">
+        <div class="muted">Faulty output</div>
+        <div class="big-bit" id="faultyOutput">0</div>
+      </div>
+    </div>
+    <div id="circuitStatus" class="status">Build a circuit to begin.</div>
+    <h3>Complete Circuit Truth Table</h3>
+    <div id="circuitTable" class="scroll"></div>
+  </section>
+
+  <section class="panel">
+    <h2>03 · Fault Injection and Detection</h2>
+    <p>This feature simulates a stuck-at fault on the selected circuit output.
+       It is a software demonstration, not a physical hardware test.</p>
+    <div class="controls">
+      <label>Fault location
+        <select id="faultLocation"></select>
+      </label>
+      <label>Fault type
+        <select id="faultType">
+          <option value="none">No fault</option>
+          <option value="0">Stuck-at-0</option>
+          <option value="1">Stuck-at-1</option>
+        </select>
+      </label>
+      <button class="primary" id="testFault">Run Fault Test</button>
+    </div>
+    <div id="faultStatus" class="status">Select a fault and run the test.</div>
+    <h3>Fault Detection Summary</h3>
+    <div id="faultSummary" class="muted">No test run yet.</div>
+  </section>
+
+  <section class="panel">
+    <h2>04 · Project Workflow</h2>
+    <div class="grid">
+      <div class="output-card"><strong>Step 1</strong><br>Select a logic gate or build a circuit.</div>
+      <div class="output-card"><strong>Step 2</strong><br>Choose binary input values.</div>
+      <div class="output-card"><strong>Step 3</strong><br>Calculate the output using Boolean logic.</div>
+      <div class="output-card"><strong>Step 4</strong><br>Generate and inspect the truth table.</div>
+      <div class="output-card"><strong>Step 5</strong><br>Inject a simulated stuck-at fault.</div>
+      <div class="output-card"><strong>Step 6</strong><br>Compare normal and faulty outputs.</div>
+    </div>
+    <p class="note">Supported gates: AND, OR, NOT, NAND, NOR and XOR. Each gate output can feed a later gate. The final output and truth table are calculated from the selected circuit.</p>
+  </section>
+</main>
+<footer>Smart Logic Gate Simulator · Digital Electronics Project</footer>
+
 <script>
-(()=>{const $=id=>document.getElementById(id);let gate="AND";const gates=[...document.querySelectorAll(".gate")];const a=$("a"),b=$("b"),fault=$("fault");
-function logic(g,x,y){return ({AND:x&&y?1:0,OR:x||y?1:0,NOT:x?0:1,NAND:x&&y?0:1,NOR:x||y?0:1,XOR:x!==y?1:0})[g]}
-function combos(){return gate==="NOT"?[[0,0],[1,0]]:[[0,0],[0,1],[1,0],[1,1]]}
-function actual(e){return fault.value==="s0"?0:fault.value==="s1"?1:e}
-function draw(x,y,out,bad){const paths={AND:"M150 35 H205 A75 75 0 0 1 205 185 H150 Z",NAND:"M150 35 H195 A65 65 0 0 1 195 165 H150 Z",OR:"M145 35 Q175 110 145 185 Q235 185 275 110 Q235 35 145 35 Z",NOR:"M145 35 Q175 110 145 185 Q225 185 260 110 Q225 35 145 35 Z",XOR:"M158 35 Q188 110 158 185 Q238 185 278 110 Q238 35 158 35 Z",NOT:"M155 45 L155 175 L260 110 Z"};
-$("shape").setAttribute("d",paths[gate]);$("shape").style.stroke=bad?"var(--red)":"var(--cyan)";
-let end={AND:275,NAND:278,OR:275,NOR:279,XOR:287,NOT:278}[gate],inv=["NAND","NOR","NOT"].includes(gate);
-$("bubble").style.display=inv?"":"none";$("bubble").setAttribute("cx",end+9);$("wo").setAttribute("d",`M${end+(inv?18:0)} 110 H365`);
-$("wa").setAttribute("d",gate==="NOT"?"M25 110 H155":"M25 65 H150");$("wb").style.display=gate==="NOT"?"none":"";$("la").setAttribute("y",gate==="NOT"?96:51);$("lb").style.display=gate==="NOT"?"none":"";$("la").textContent="A = "+x;$("lb").textContent="B = "+y;$("gt").textContent=gate;$("gt").setAttribute("x",gate==="NOT"?195:205);$("ly").textContent="Y = "+out;$("py").textContent=out;$("pill").style.stroke=bad?"var(--red)":"#2d6864";$("ctitle").textContent=gate+" gate circuit"}
-function renderTable(x,y){const isNot=gate==="NOT";$("thead").innerHTML=isNot?"<tr><th>A</th><th>Expected Y</th><th>Actual Y</th><th>Test result</th></tr>":"<tr><th>A</th><th>B</th><th>Expected Y</th><th>Actual Y</th><th>Test result</th></tr>";let n=0;$("tbody").innerHTML=combos().map(([u,v])=>{let e=logic(gate,u,v),z=actual(e),bad=e!==z;if(bad)n++;return `<tr class="${u===x&&(isNot||v===y)?"current ":""}${bad?"detected":""}"><td>${u}</td>${isNot?"":`<td>${v}</td>`}<td>${e}</td><td>${z}</td><td>${bad?"FAULT REVEALED":"MATCH"}</td></tr>`}).join("");$("count").textContent=combos().length;$("summary").className="message"+(n?" error":"");$("summary").textContent=fault.value==="none"?"Normal operation: all input combinations match.":`${n} of ${combos().length} input combinations reveal the selected fault.`}
-function diagnosis(run=false){const box=$("diag");if(fault.value==="none"){box.className="message warn";box.textContent=run?"Select Stuck-at-0 or Stuck-at-1 first, then run the scan.":"Choose a fault and run a diagnostic scan.";return}const tests=combos().map(([x,y])=>({x,y,e:logic(gate,x,y)})),hits=tests.filter(t=>t.e!==actual(t.e));box.className="message"+(hits.length?" error":" warn");box.textContent=(run?"Diagnostic scan complete. ":"Diagnostic preview. ")+hits.length+" of "+tests.length+" test combinations reveal the fault. "+(hits.length?"Useful test(s): "+hits.map(t=>gate==="NOT"?"A="+t.x:"A="+t.x+", B="+t.y).join("; ")+".":"No test combination reveals the selected fault for this gate.") }
-function update(){let x=+a.checked,y=+b.checked,e=logic(gate,x,y),z=actual(e),bad=e!==z;$("av").textContent=x;$("bv").textContent=y;$("bcard").style.display=gate==="NOT"?"none":"";$("exp").textContent=e;$("act").textContent=z;$("act").className="val "+(bad?"red":"green");$("status").textContent=fault.value==="s0"?"STUCK-AT-0":fault.value==="s1"?"STUCK-AT-1":"NORMAL";$("status").className="val "+(fault.value==="none"?"cyan":"");$("fd").textContent=fault.value==="s0"?"Output forced to 0.":fault.value==="s1"?"Output forced to 1.":"Output follows the selected gate.";$("live").className="message"+(bad?" error":fault.value!=="none"?" warn":"");$("live").textContent=bad?`FAULT DETECTED: expected ${e}, actual ${z}.`:fault.value==="none"?"Normal operation: expected and actual outputs match.":`Fault is active but this input does not reveal it; both outputs are ${e}.`;gates.forEach(g=>g.classList.toggle("selected",g.dataset.g===gate));draw(x,y,z,bad);renderTable(x,y);diagnosis()}
-gates.forEach(g=>g.addEventListener("click",()=>{gate=g.dataset.g;update()}));a.addEventListener("change",update);b.addEventListener("change",update);fault.addEventListener("change",update);$("reset").addEventListener("click",()=>{a.checked=false;b.checked=false;update()});$("clear").addEventListener("click",()=>{fault.value="none";update()});$("scan").addEventListener("click",()=>diagnosis(true));$("testall").addEventListener("click",()=>{$("summary").textContent="Test run complete. "+$("summary").textContent;});update()})();
-</script></body></html>
+"use strict";
+
+const gateTypes = ["AND","OR","NOT","NAND","NOR","XOR"];
+let singleGate = "AND";
+let gates = [];
+let nextId = 1;
+let lastFaultResults = null;
+
+const $ = id => document.getElementById(id);
+const bit = value => Number(value) ? 1 : 0;
+
+function gateValue(type,a,b=0){
+  a=bit(a); b=bit(b);
+  switch(type){
+    case "AND": return a & b;
+    case "OR": return a | b;
+    case "NOT": return a ? 0 : 1;
+    case "NAND": return (a & b) ? 0 : 1;
+    case "NOR": return (a | b) ? 0 : 1;
+    case "XOR": return a ^ b;
+    default: return 0;
+  }
+}
+function isUnary(type){return type==="NOT";}
+function gateName(id){return "G"+id;}
+function optionsHTML(options,selected){
+  return options.map(o=>{
+    const value=typeof o==="string"?o:o.value;
+    const label=typeof o==="string"?o:o.label;
+    return `<option value="${value}" ${String(value)===String(selected)?"selected":""}>${label}</option>`;
+  }).join("");
+}
+function gateSVG(type,x,y,scale=1){
+  const w=78*scale,h=52*scale;
+  let shape="";
+  if(type==="NOT"){
+    shape=`<path class="gate-shape" d="M ${x} ${y-h/2} L ${x} ${y+h/2} L ${x+w-12*scale} ${y} Z"/>
+      <circle class="gate-shape" cx="${x+w-7*scale}" cy="${y}" r="${5*scale}"/>`;
+  }else if(type==="AND"||type==="NAND"){
+    shape=`<path class="gate-shape" d="M ${x} ${y-h/2} L ${x+30*scale} ${y-h/2} A ${26*scale} ${26*scale} 0 0 1 ${x+30*scale} ${y+h/2} L ${x} ${y+h/2} Z"/>`;
+    if(type==="NAND") shape+=`<circle class="gate-shape" cx="${x+w-6*scale}" cy="${y}" r="${5*scale}"/>`;
+  }else if(type==="OR"||type==="NOR"||type==="XOR"){
+    if(type==="XOR") shape+=`<path d="M ${x-5*scale} ${y-h/2} Q ${x+17*scale} ${y} ${x-5*scale} ${y+h/2}" fill="none" stroke="var(--cyan)" stroke-width="2"/>`;
+    shape+=`<path class="gate-shape" d="M ${x} ${y-h/2} Q ${x+25*scale} ${y-h/2} ${x+w-14*scale} ${y} Q ${x+25*scale} ${y+h/2} ${x} ${y+h/2} Q ${x+20*scale} ${y} ${x} ${y-h/2} Z"/>`;
+    if(type==="NOR") shape+=`<circle class="gate-shape" cx="${x+w-7*scale}" cy="${y}" r="${5*scale}"/>`;
+  }
+  const labelX=x+35*scale;
+  shape+=`<text class="gate-text" x="${labelX}" y="${y+4*scale}" font-size="${11*scale}">${type}</text>`;
+  return shape;
+}
+function drawSingle(){
+  const type=singleGate, a=bit($("singleA").value), b=bit($("singleB").value);
+  $("singleTitle").textContent=type+" Gate";
+  $("singleBLabel").style.display=isUnary(type)?"none":"inline-flex";
+  const result=gateValue(type,a,b);
+  $("singleOutput").textContent=result;
+  $("singleSvg").innerHTML=`
+    <path class="wire" d="M 35 55 H 180 M 35 105 H 180 M 260 80 H 440"/>
+    <text class="pin-text" x="20" y="48">A = ${a}</text>
+    ${isUnary(type)?"":`<text class="pin-text" x="20" y="98">B = ${b}</text>`}
+    ${gateSVG(type,180,80,1)}
+    <text class="pin-text" x="448" y="74">Y</text>
+    <circle class="signal ${a?"":"off"}" cx="35" cy="55" r="4"/>
+    ${isUnary(type)?"":`<circle class="signal ${b?"":"off"}" cx="35" cy="105" r="4"/>`}
+    <circle class="signal ${result?"":"off"}" cx="440" cy="80" r="4"/>
+  `;
+  const rows=isUnary(type)?[[0],[1]]:[[0,0],[0,1],[1,0],[1,1]];
+  $("singleTable").innerHTML=`<table><thead><tr><th>A</th>${isUnary(type)?"": "<th>B</th>"}<th>Y</th></tr></thead><tbody>${
+    rows.map(r=>`<tr class="${r[0]===a&&(isUnary(type)||r[1]===b)?"current":""}"><td>${r[0]}</td>${isUnary(type)?"":`<td>${r[1]}</td>`}<td>${gateValue(type,r[0],r[1]||0)}</td></tr>`).join("")
+  }</tbody></table>`;
+}
+function sourceOptions(index){
+  const opts=[{value:"A",label:"Input A"},{value:"B",label:"Input B"}];
+  gates.slice(0,index).forEach(g=>opts.push({value:gateName(g.id),label:gateName(g.id)+" output"}));
+  return opts;
+}
+function repairSources(){
+  gates.forEach((g,i)=>{
+    const allowed=sourceOptions(i).map(o=>o.value);
+    if(!allowed.includes(g.in1))g.in1="A";
+    if(!allowed.includes(g.in2))g.in2="B";
+  });
+}
+function renderGateList(){
+  repairSources();
+  $("gateList").innerHTML=gates.map((g,i)=>`
+    <div class="gate-row">
+      <div>
+        <strong>${gateName(g.id)}</strong>
+        <select data-id="${g.id}" data-field="type" aria-label="Gate type for ${gateName(g.id)}">
+          ${optionsHTML(gateTypes,g.type)}
+        </select>
+      </div>
+      <div>
+        <label style="display:block">Input 1</label>
+        <select data-id="${g.id}" data-field="in1">${optionsHTML(sourceOptions(i),g.in1)}</select>
+        <label style="display:block;margin-top:5px">Input 2</label>
+        <select data-id="${g.id}" data-field="in2" ${isUnary(g.type)?"disabled":""}>${optionsHTML(sourceOptions(i),g.in2)}</select>
+      </div>
+      <button class="danger" data-remove="${g.id}">Remove ${gateName(g.id)}</button>
+    </div>`).join("") || `<p class="muted">No gates yet. Click “Add Gate” or load the example.</p>`;
+  updateSelectors();
+}
+function updateSelectors(){
+  const outputOpts=gates.map(g=>({value:gateName(g.id),label:gateName(g.id)+" output"}));
+  $("finalOutput").innerHTML=optionsHTML(outputOpts,outputOpts.some(o=>o.value===$("finalOutput").value)?$("finalOutput").value:(outputOpts.at(-1)?.value||""));
+  const faultOpts=[{value:"",label:"None / primary output"}].concat(outputOpts);
+  $("faultLocation").innerHTML=optionsHTML(faultOpts,$("faultLocation").value);
+}
+function readSource(source,values,a,b){
+  if(source==="A")return a;
+  if(source==="B")return b;
+  return values[source] ?? 0;
+}
+function evaluate(a,b,fault=null){
+  const values={};
+  for(const g of gates){
+    const x=readSource(g.in1,values,a,b);
+    const y=readSource(g.in2,values,a,b);
+    let out=gateValue(g.type,x,y);
+    if(fault && fault.location===gateName(g.id) && fault.type!=="none")out=Number(fault.type);
+    values[gateName(g.id)]=out;
+  }
+  const selected=$("finalOutput").value;
+  return {values,output:selected?values[selected]:0};
+}
+function drawCircuit(){
+  const svg=$("circuitSvg");
+  const width=Math.max(760,220+gates.length*150);
+  const height=Math.max(260,Math.min(480,100+gates.length*22));
+  svg.setAttribute("viewBox",`0 0 ${width} ${height}`);
+  let markup=`<text class="pin-text" x="20" y="35">A = ${$("inputA").value}</text>
+  <text class="pin-text" x="20" y="55">B = ${$("inputB").value}</text>`;
+  const positions={};
+  gates.forEach((g,i)=>positions[gateName(g.id)]={x:150+i*150,y:height/2});
+  gates.forEach((g,i)=>{
+    const p=positions[gateName(g.id)];
+    const sources=[g.in1,g.in2];
+    sources.forEach((s,j)=>{
+      if(j===1&&isUnary(g.type))return;
+      const sy=p.y+(j===0?-18:18);
+      let startX=65,startY=s==="A"?35:55;
+      if(s!=="A"&&s!=="B"&&positions[s]){
+        startX=positions[s].x+82;
+        startY=positions[s].y;
+      }
+      markup+=`<path class="wire" d="M ${startX} ${startY} H ${Math.max(startX+8,p.x-24)} V ${sy} H ${p.x}"/>`;
+    });
+    markup+=gateSVG(g.type,p.x,p.y,0.9);
+    markup+=`<text class="pin-text" x="${p.x+28}" y="${p.y+44}">${gateName(g.id)}</text>`;
+    markup+=`<path class="wire" d="M ${p.x+82} ${p.y} H ${p.x+112}"/>`;
+    markup+=`<circle class="signal" cx="${p.x+112}" cy="${p.y}" r="4"/>`;
+  });
+  const final=$("finalOutput").value;
+  if(final&&positions[final]){
+    const p=positions[final];
+    markup+=`<path class="wire" d="M ${p.x+112} ${p.y} H ${p.x+145}"/>`;
+    markup+=`<text class="pin-text" x="${p.x+116}" y="${p.y-12}">Y</text>`;
+  }else{
+    markup+=`<text class="pin-text" x="20" y="${height-18}">Add a gate to display the circuit</text>`;
+  }
+  svg.innerHTML=markup;
+}
+function makeCircuitTable(){
+  if(!gates.length){
+    $("circuitTable").innerHTML="<p class='muted'>Add gates to generate a truth table.</p>";
+    return;
+  }
+  const rows=[[0,0],[0,1],[1,0],[1,1]];
+  const final=$("finalOutput").value;
+  $("circuitTable").innerHTML=`<table><thead><tr><th>A</th><th>B</th>${gates.map(g=>`<th>${gateName(g.id)}</th>`).join("")}<th>Y (${final})</th></tr></thead><tbody>${
+    rows.map(([a,b])=>{
+      const r=evaluate(a,b);
+      const active=a===bit($("inputA").value)&&b===bit($("inputB").value);
+      return `<tr class="${active?"current":""}"><td>${a}</td><td>${b}</td>${gates.map(g=>`<td>${r.values[gateName(g.id)]}</td>`).join("")}<td>${r.output}</td></tr>`;
+    }).join("")
+  }</tbody></table>`;
+}
+function refreshCircuit(){
+  const a=bit($("inputA").value),b=bit($("inputB").value);
+  const normal=evaluate(a,b);
+  const faultType=$("faultType").value;
+  const location=$("faultLocation").value;
+  const faulty=evaluate(a,b,{type:faultType,location});
+  $("normalOutput").textContent=normal.output;
+  $("faultyOutput").textContent=faultType==="none"?"—":faulty.output;
+  $("circuitStatus").innerHTML=`Current input: A=${a}, B=${b}. Output <strong>${$("finalOutput").value||"not selected"}</strong> = <strong>${normal.output}</strong>.`;
+  drawCircuit();
+  makeCircuitTable();
+  if(lastFaultResults)runFaultTest();
+}
+function runFaultTest(){
+  const type=$("faultType").value, location=$("faultLocation").value;
+  if(type==="none"){
+    $("faultStatus").innerHTML=`<span class="warn">No fault selected.</span> Choose stuck-at-0 or stuck-at-1 and run the test.`;
+    $("faultSummary").textContent="No fault test performed.";
+    lastFaultResults=null;
+    refreshOutputsOnly();
+    return;
+  }
+  if(!gates.length){
+    $("faultStatus").innerHTML="<span class='warn'>Add at least one gate before running a circuit fault test.</span>";
+    return;
+  }
+  const rows=[[0,0],[0,1],[1,0],[1,1]];
+  const results=rows.map(([a,b])=>{
+    const normal=evaluate(a,b);
+    const faulty=evaluate(a,b,{type,location});
+    return {a,b,normal:normal.output,faulty:faulty.output,detected:normal.output!==faulty.output};
+  });
+  const detected=results.filter(r=>r.detected).length;
+  lastFaultResults={type,location,results,detected};
+  $("faultStatus").innerHTML=detected
+    ?`<span class="good">Fault detected.</span> ${detected} of 4 input combinations produce a different observed output.`
+    :`<span class="warn">Fault not detected at the observed output.</span> The selected fault does not change the final observed output for these input combinations.`;
+  $("faultSummary").innerHTML=`Fault: <strong>${location||"primary output"}</strong> stuck-at-${type}.<br>Input combinations tested: 4.<br>Detected combinations: ${detected}.<br>Detection coverage for this truth table: ${detected*25}%.`;
+  refreshOutputsOnly();
+}
+function refreshOutputsOnly(){
+  const a=bit($("inputA").value),b=bit($("inputB").value);
+  $("normalOutput").textContent=evaluate(a,b).output;
+  const type=$("faultType").value,location=$("faultLocation").value;
+  $("faultyOutput").textContent=type==="none"?"—":evaluate(a,b,{type,location}).output;
+}
+function addGate(type="AND",in1="A",in2="B"){
+  gates.push({id:nextId++,type,in1,in2});
+  renderGateList();refreshCircuit();
+}
+$("singleButtons").addEventListener("click",e=>{
+  const button=e.target.closest("button[data-gate]");
+  if(!button)return;
+  singleGate=button.dataset.gate;drawSingle();
+});
+$("singleA").addEventListener("change",drawSingle);
+$("singleB").addEventListener("change",drawSingle);
+
+$("addGate").addEventListener("click",()=>addGate());
+$("clearCircuit").addEventListener("click",()=>{
+  gates=[];nextId=1;lastFaultResults=null;
+  renderGateList();refreshCircuit();
+  $("faultStatus").textContent="Circuit cleared. Add a gate before testing.";
+  $("faultSummary").textContent="No test run yet.";
+});
+$("example").addEventListener("click",()=>{
+  // Example: Y = (A AND B) OR A
+  gates=[
+    {id:1,type:"AND",in1:"A",in2:"B"},
+    {id:2,type:"OR",in1:"G1",in2:"A"}
+  ];
+  nextId=3;lastFaultResults=null;
+  $("inputA").value="1";$("inputB").value="0";
+  renderGateList();refreshCircuit();
+});
+$("gateList").addEventListener("change",e=>{
+  const field=e.target.dataset.field,id=Number(e.target.dataset.id);
+  if(!field)return;
+  const g=gates.find(g=>g.id===id);
+  if(!g)return;
+  g[field]=e.target.value;
+  if(field==="type"&&isUnary(g.type))g.in2="B";
+  lastFaultResults=null;
+  renderGateList();refreshCircuit();
+});
+$("gateList").addEventListener("click",e=>{
+  const id=Number(e.target.dataset.remove);
+  if(!id)return;
+  gates=gates.filter(g=>g.id!==id);
+  // Remove references to gates that no longer exist.
+  repairSources();lastFaultResults=null;
+  renderGateList();refreshCircuit();
+});
+["inputA","inputB","finalOutput"].forEach(id=>$(id).addEventListener("change",()=>{
+  lastFaultResults=null;refreshCircuit();
+}));
+$("faultLocation").addEventListener("change",()=>{lastFaultResults=null;refreshCircuit();});
+$("faultType").addEventListener("change",()=>{lastFaultResults=null;refreshCircuit();});
+$("testFault").addEventListener("click",runFaultTest);
+
+// Initial screen
+drawSingle();
+addGate("AND","A","B");
+</script>
+</body>
+</html>
